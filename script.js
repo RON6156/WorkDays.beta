@@ -1,6 +1,8 @@
-const supabase = supabase.createClient(
+const supabase = window.supabase.createClient(
   "https://gcfesikhojqrppomruwk.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjZmVzaWtob2pxcnBwb21ydXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNjQwMDAsImV4cCI6MjA2Nzc0MDAwMH0.TGTi4OJZrIkdjCNQNlXtK5WqrMGzqrIwUjKzwB2exUU"
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+);
+
 );
 let currentUser = null;
 
