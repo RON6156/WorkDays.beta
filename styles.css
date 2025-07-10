@@ -4,14 +4,12 @@
   --text: #1a1a1a;
   --accent: #e3f2fd;
 }
-
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
 }
-
 .container {
   max-width: 600px;
   margin: 3rem auto;
@@ -20,11 +18,9 @@ body {
   box-shadow: 0 0 15px rgba(0, 80, 200, 0.1);
   border-radius: 1rem;
 }
-
-h2 {
+h1, h2 {
   color: var(--primary);
 }
-
 input, select {
   width: 100%;
   padding: 0.75rem;
@@ -33,7 +29,6 @@ input, select {
   border-radius: 0.5rem;
   font-size: 1rem;
 }
-
 button {
   background: var(--primary);
   color: white;
@@ -44,21 +39,17 @@ button {
   font-weight: bold;
   margin: 0.5rem 0;
 }
-
 button:hover {
   background: #0d47a1;
 }
-
 .btn-group {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
 }
-
 .hidden {
   display: none;
 }
-
 .fab {
   position: fixed;
   bottom: 20px;
