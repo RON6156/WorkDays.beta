@@ -1,36 +1,51 @@
-const supabase = supabase.createClient("https://gcfesikhojqrppomruwk.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjZmVzaWtob2pxcnBwb21ydXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNjQwMDAsImV4cCI6MjA2Nzc0MDAwMH0.TGTi4OJZrIkdjCNQNlXtK5WqrMGzqrIwUjKzwB2exUU");
+const supabase = supabase.createClient(
+  "https://gcfesikhojqrppomruwk.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjZmVzaWtob2pxcnBwb21ydXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxNjQwMDAsImV4cCI6MjA2Nzc0MDAwMH0.TGTi4OJZrIkdjCNQNlXtK5WqrMGzqrIwUjKzwB2exUU"
+);
 
 let currentUser = null;
 
 async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  const { error, data } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return alert(error.message);
-  currentUser = data.user;
-  loadSettings();
-  document.getElementById("auth-section").classList.add("hidden");
-  document.getElementById("tracker-section").classList.remove("hidden");
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    alert("Login failed: " + error.message);
+  } else {
+    currentUser = data.user;
+    document.getElementById("auth-section").classList.add("hidden");
+    document.getElementById("tracker-section").classList.remove("hidden");
+    loadSettings();
+  }
 }
 
 async function signup() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
+
   const { error } = await supabase.auth.signUp({ email, password });
-  if (error) alert(error.message);
-  else alert("Check your email to confirm.");
+
+  if (error) {
+    alert("Signup failed: " + error.message);
+  } else {
+    alert("Signup successful! Verify your email before logging in.");
+  }
 }
 
 async function submitShift() {
   const date = document.getElementById("shift-date").value;
   const hours = parseFloat(document.getElementById("shift-hours").value);
   const holiday = document.getElementById("holiday-type").value;
+
   await supabase.from("shifts").upsert({
     user_id: currentUser.id,
     date,
     hours_worked: hours,
-    holiday_type: holiday
+    holiday_type: holiday,
   });
+
   alert("Shift saved.");
 }
 
@@ -47,14 +62,15 @@ async function saveSettings() {
     overtime_rate: overtime,
     cutoff_start_day: cutoffStart,
     cutoff_end_day: cutoffEnd,
-    salary_day: salaryDay
+    salary_day: salaryDay,
   });
+
   alert("Settings saved.");
 }
 
 async function loadSettings() {
   const { data } = await supabase.from("settings").select("*").eq("user_id", currentUser.id);
-  const settings = data[0];
+  const settings = data?.[0];
   if (settings) {
     document.getElementById("rate").value = settings.rate_per_day;
     document.getElementById("overtime").value = settings.overtime_rate;
@@ -84,7 +100,10 @@ async function generatePayslip() {
     .gte("date", start.toISOString())
     .lte("date", end.toISOString());
 
-  let totalDays = 0, totalOT = 0, totalPay = 0;
+  let totalDays = 0,
+    totalOT = 0,
+    totalPay = 0;
+
   for (let shift of shifts) {
     const hours = shift.hours_worked;
     const ot = Math.max(0, hours - 9);
@@ -93,9 +112,12 @@ async function generatePayslip() {
     totalPay += rate + ot * overtimeRate;
   }
 
-  document.getElementById("payslip-result").innerText =
-    \`Period: \${start.toDateString()} - \${end.toDateString()}
-Days Worked: \${totalDays}
-Overtime Hours: \${totalOT}
-Total Pay: ₱\${totalPay.toFixed(2)}\`;
+  document.getElementById("payslip-result").innerText = `Period: ${start.toDateString()} - ${end.toDateString()}
+Days Worked: ${totalDays}
+Overtime Hours: ${totalOT}
+Total Pay: ₱${totalPay.toFixed(2)}`;
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }

@@ -3,42 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WorkDays</title>
+  <title>Work Days Tracker</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
     <h1>Work Days Tracker</h1>
+
     <div id="auth-section">
-      <input type="email" id="email" placeholder="Email" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
-      <button onclick="signup()">Sign Up</button>
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <div class="btn-group">
+        <button onclick="login()">Login</button>
+        <button onclick="signup()">Sign Up</button>
+      </div>
     </div>
+
     <div id="tracker-section" class="hidden">
-      <h2>Shift Entry</h2>
-      <input type="date" id="shift-date" />
-      <input type="number" id="shift-hours" placeholder="Hours Worked" />
-      <select id="holiday-type">
-        <option value="none">None</option>
-        <option value="legal">Legal Holiday</option>
-        <option value="special">Special Holiday</option>
-      </select>
-      <button onclick="submitShift()">Submit Shift</button>
+      <section>
+        <h2>Shift Entry</h2>
+        <input type="date" id="shift-date" />
+        <input type="number" id="shift-hours" placeholder="Hours Worked" />
+        <select id="holiday-type">
+          <option value="none">None</option>
+          <option value="legal">Legal Holiday</option>
+          <option value="special">Special Holiday</option>
+        </select>
+        <button onclick="submitShift()">Submit Shift</button>
+      </section>
 
-      <h2>Settings</h2>
-      <input type="number" id="rate" placeholder="Rate per Day" />
-      <input type="number" id="overtime" placeholder="OT Rate per Hour" />
-      <input type="number" id="cutoff-start" placeholder="Cutoff Start Day" />
-      <input type="number" id="cutoff-end" placeholder="Cutoff End Day" />
-      <input type="number" id="salary-day" placeholder="Salary Day" />
-      <button onclick="saveSettings()">Save Settings</button>
+      <section>
+        <h2>Settings</h2>
+        <input type="number" id="rate" placeholder="Rate per Day" />
+        <input type="number" id="overtime" placeholder="OT Rate per Hour" />
+        <input type="number" id="cutoff-start" placeholder="Cutoff Start Day" />
+        <input type="number" id="cutoff-end" placeholder="Cutoff End Day" />
+        <input type="number" id="salary-day" placeholder="Salary Day" />
+        <button onclick="saveSettings()">Save Settings</button>
+      </section>
 
-      <h2>Payslip</h2>
-      <button onclick="generatePayslip()">Generate Payslip</button>
-      <pre id="payslip-result"></pre>
+      <section>
+        <h2>Payslip</h2>
+        <button onclick="generatePayslip()">Generate Payslip</button>
+        <pre id="payslip-result"></pre>
+      </section>
     </div>
   </div>
+
+  <button class="fab" onclick="scrollToTop()">↑</button>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="script.js"></script>
 </body>
