@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Work Days Tracker - Dashboard</title>
+  <style>
+    :root {
+      --primary: #1565c0;
+      --primary-dark: #0d47a1;
+      --bg: #f5f9ff;
+      --text: #1a1a1a;
+      --accent: #e3f2fd;
+      --shadow: rgba(0, 80, 200, 0.15);
+      --border-radius: 0.75rem;
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --sidebar-width: 260px;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0; padding: 0;
+      height: 100%;
+      font-family: var(--font-family);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    header {
+      height: 56px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    header .hamburger {
+      font-size: 1.8rem;
+      cursor: pointer;
+      user-select: none;
+      margin-right: 1rem;
+    }
+    header .title {
+      font-weight: 700;
+      font-size: 1.3rem;
+      flex-grow: 1;
+    }
+    header button.logout {
+      background: transparent;
+      border: none;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--border-radius);
+      transition: background-color 0.3s ease;
+    }
+    header button.logout:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Sidebar */
+nav.sidebar {
+  position: absolute;
+  top: 56px;
+  left: 1rem;
+  width: 240px;
+  background: white;
+  border: 1px solid var(--accent);
+  box-shadow: 0 4px 12px var(--shadow);
+  border-radius: var(--border-radius);
+  padding: 1rem 1rem 0.5rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 100;
+}
+
+nav.sidebar.open {
+  display: flex;
+}
+
+    nav.sidebar.open {
+      left: 0;
+    }
+    nav.sidebar h2 {
+      margin-top: 0;
+      color: var(--primary);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 0.25rem;
+      font-weight: 600;
+    }
+    nav.sidebar button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
+      margin-top: auto;
+    }
+    nav.sidebar button:hover {
+      background: var(--primary-dark);
+    }
+    nav.sidebar .tab-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    nav.sidebar .tab-buttons button {
+      flex: 1;
+      background: var(--accent);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary);
+      font-weight: 600;
+      padding: 0.5rem;
+      border-radius: var(--border-radius);
+    }
+    nav.sidebar .tab-buttons button.active {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+    nav.sidebar section {
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+    nav.sidebar label {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      display: block;
+      color: var(--primary-dark);
+    }
+    nav.sidebar input, nav.sidebar select, nav.sidebar button.save-btn {
+      width: 100%;
+      font-family: var(--font-family);
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      border: 1.5px solid #ccc;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1rem;
+      outline-offset: 2px;
+      transition: border-color 0.3s ease;
+    }
+    nav.sidebar input:focus, nav.sidebar select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 5px var(--primary);
+thea    }
+    nav.sidebar button.save-btn {
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      margin-top: 0;
+      padding: 0.75rem 1rem;
+      transition: background-color 0.3s ease;
+    }
+    nav.sidebar button.save-btn:hover {
+      background: var(--primary-dark);
+    }
+    nav.sidebar pre {
+      background: var(--accent);
+      padding: 1rem;
+      border-radius: var(--border-radius);
+      white-space: pre-wrap;
+      font-size: 1rem;
+      color: var(--text);
+      min-height: 150px;
+      user-select: text;
+      overflow-x: auto;
+    }
+
+    /* Main content */
+    main.content {
+      margin-top: 56px;
+      margin-left: 0;
+      padding: 2rem 1.5rem;
+      transition: margin-left 0.3s ease;
+      max-width: 600px;
+      width: 100%;
+    }
+    main.content.sidebar-open {
+      margin-left: var(--sidebar-width);
+    }
+    main.content h2 {
+      color: var(--primary);
+      margin-top: 0;
+    }
+    main.content section {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 0 12px var(--shadow);
+      margin-bottom: 2rem;
+    }
+    main.content label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+    main.content input, main.content select, main.content button {
+      width: 100%;
+      font-family: var(--font-family);
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      border: 1.5px solid #ccc;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      outline-offset: 2px;
+      transition: border-color 0.3s ease;
+    }
+    main.content input:focus, main.content select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 5px var(--primary);
+    }
+    main.content button {
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      padding: 0.75rem 1rem;
+      transition: background-color 0.3s ease;
+    }
+    main.content button:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Scroll to top */
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 26px;
+      border: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      z-index: 20;
+    }
+    .fab:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      nav.sidebar {
+        width: 220px;
+      }
+      main.content.sidebar-open {
+        margin-left: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hamburger" tabindex="0" role="button" aria-label="Toggle menu" aria-expanded="false">&#9776;</div>
+    <div class="title">Work Days Tracker</div>
+    <button class="logout" aria-label="Logout">Logout</button>
+  </header>
+
+  <nav class="sidebar" aria-label="Sidebar menu" aria-hidden="true">
+    <div class="tab-buttons" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="settings-section" id="settings-tab">Settings</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="payslip-section" id="payslip-tab">Payslip</button>
+    </div>
+
+    <section id="settings-section" role="tabpanel" aria-labelledby="settings-tab">
+      <h2>Settings</h2>
+      <label for="rate">Rate per Day (₱)</label>
+      <input type="number" id="rate" min="0" step="0.01" placeholder="e.g. 1000" />
+      <label for="overtime">OT Rate per Hour (₱)</label>
+      <input type="number" id="overtime" min="0" step="0.01" placeholder="e.g. 125" />
+      <label for="cutoff-start">Cutoff Start Day</label>
+      <input type="number" id="cutoff-start" min="1" max="28" placeholder="e.g. 16" />
+      <label for="cutoff-end">Cutoff End Day</label>
+      <input type="number" id="cutoff-end" min="1" max="31" placeholder="e.g. 30" />
+      <label for="salary-day">Salary Day</label>
+      <input type="number" id="salary-day" min="1" max="31" placeholder="e.g. 5" />
+      <button class="save-btn" id="btn-save-settings">Save Settings</button>
+    </section>
+
+    <section id="payslip-section" role="tabpanel" aria-labelledby="payslip-tab" hidden>
+      <h2>Payslip</h2>
+      <button id="btn-generate-payslip">Generate Payslip</button>
+<button id="btn-clear-payslip" style="background:red; color: #fff; margin-top: 8px;">Clear Payslip</button>
+<pre id="payslip-result" aria-live="polite" aria-atomic="true"></pre>
+
+    </section>
+  </nav>
+
+  <main class="content" tabindex="0" aria-label="Shift entry and list">
+    <section aria-labelledby="shift-entry-title">
+      <h2 id="shift-entry-title">Shift Entry</h2>
+      <label for="shift-date">Date</label>
+      <input type="date" id="shift-date" />
+      <label for="shift-hours">Hours Worked</label>
+      <input type="number" id="shift-hours" min="0" max="24" step="0.25" placeholder="e.g. 8" />
+      <label for="holiday-type">Holiday Type</label>
+      <select id="holiday-type">
+        <option value="none">None</option>
+        <option value="legal">Legal Holiday</option>
+        <option value="special">Special Holiday</option>
+      </select>
+      <button id="btn-submit-shift">Submit Shift</button>
+    </section>
+
+    <section aria-label="Saved Shifts">
+      <h2>Saved Shifts</h2>
+      <table id="shifts-table" style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: var(--primary); color:white;">
+            <th style="padding: 0.5rem; text-align: left;">Date</th>
+            <th style="padding: 0.5rem; text-align: left;">Hours</th>
+            <th style="padding: 0.5rem; text-align: left;">Holiday</th>
+            <th style="padding: 0.5rem; text-align: left;">Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <button class="fab" title="Scroll to top" aria-label="Scroll to top">↑</button>
+
+  <script>
+    let currentUserEmail = sessionStorage.getItem('currentUserEmail');
+    if (!currentUserEmail) {
+      alert('You are not logged in.');
+      window.location.href = 'index.html';
+    }
+
+    // Elements
+    const hamburger = document.querySelector('.hamburger');
+    const sidebar = document.querySelector('.sidebar');
+    const content = document.querySelector('main.content');
+    const logoutBtn = document.querySelector('button.logout');
+    const tabs = document.querySelectorAll('.tab-btn');
+    const settingsSection = document.getElementById('settings-section');
+    const payslipSection = document.getElementById('payslip-section');
+    const rateInput = document.getElementById('rate');
+    const overtimeInput = document.getElementById('overtime');
+    const cutoffStartInput = document.getElementById('cutoff-start');
+    const cutoffEndInput = document.getElementById('cutoff-end');
+    const salaryDayInput = document.getElementById('salary-day');
+    const btnSaveSettings = document.getElementById('btn-save-settings');
+    const btnGeneratePayslip = document.getElementById('btn-generate-payslip');
+    const btnClearPayslip = document.getElementById('btn-clear-payslip');
+    
+    const payslipResult = document.getElementById('payslip-result');
+    const shiftDateInput = document.getElementById('shift-date');
+    const shiftHoursInput = document.getElementById('shift-hours');
+    const holidayTypeSelect = document.getElementById('holiday-type');
+    const btnSubmitShift = document.getElementById('btn-submit-shift');
+    const shiftsTableBody = document.querySelector('#shifts-table tbody');
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('users') || '{}');
+    }
+    function saveUsers(users) {
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+    function getShifts() {
+      const users = getUsers();
+      return users[currentUserEmail]?.shifts || [];
+    }
+    function saveShifts(shifts) {
+      const users = getUsers();
+      if (!users[currentUserEmail]) return;
+      users[currentUserEmail].shifts = shifts;
+      saveUsers(users);
+    }
+    function getSettings() {
+      const users = getUsers();
+      return users[currentUserEmail]?.settings || {};
+    }
+    function saveUserSettings(settings) {
+      const users = getUsers();
+      if (!users[currentUserEmail]) return;
+      users[currentUserEmail].settings = settings;
+      saveUsers(users);
+    }
+// Hamburger dropdown toggle
+hamburger.addEventListener('click', () => {
+  const isOpen = sidebar.classList.contains('open');
+  sidebar.classList.toggle('open');
+  hamburger.setAttribute('aria-expanded', !isOpen);
+  sidebar.setAttribute('aria-hidden', isOpen);
+});
+
+    document.addEventListener('click', (e) => {
+  if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+    sidebar.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    sidebar.setAttribute('aria-hidden', 'true');
+  }
+});
+
+    // Tab switching in sidebar
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+
+        if (tab.id === 'settings-tab') {
+          settingsSection.hidden = false;
+          payslipSection.hidden = true;
+        } else {
+          settingsSection.hidden = true;
+          payslipSection.hidden = false;
+        }
+        
+        btnClearPayslip.addEventListener('click', () => {
+  payslipResult.textContent = '';
+});
+
+      });
+    });
+
+    // Logout button
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('currentUserEmail');
+      window.location.href = 'index.html';
+    });
+
+    // Load settings
+    function loadSettings() {
+      const settings = getSettings();
+      rateInput.value = settings.rate_per_day ?? '';
+      overtimeInput.value = settings.overtime_rate ?? '';
+      cutoffStartInput.value = settings.cutoff_start_day ?? '';
+      cutoffEndInput.value = settings.cutoff_end_day ?? '';
+      salaryDayInput.value = settings.salary_day ?? '';
+    }
+    btnSaveSettings.addEventListener('click', () => {
+      const rate = parseFloat(rateInput.value);
+      const overtime = parseFloat(overtimeInput.value);
+      const cutoffStart = parseInt(cutoffStartInput.value);
+      const cutoffEnd = parseInt(cutoffEndInput.value);
+      const salaryDay = parseInt(salaryDayInput.value);
+      if (
+        isNaN(rate) || rate < 0 ||
+        isNaN(overtime) || overtime < 0 ||
+        isNaN(cutoffStart) || cutoffStart < 1 || cutoffStart > 28 ||
+        isNaN(cutoffEnd) || cutoffEnd < 1 || cutoffEnd > 31 ||
+        isNaN(salaryDay) || salaryDay < 1 || salaryDay > 31
+      ) {
+        alert('Please enter valid settings.');
+        return;
+      }
+      const settings = { rate_per_day: rate, overtime_rate: overtime, cutoff_start_day: cutoffStart, cutoff_end_day: cutoffEnd, salary_day: salaryDay };
+      saveUserSettings(settings);
+      alert('Settings saved.');
+    });
+
+    // Load shifts and render table
+    function loadShifts() {
+      const shifts = getShifts();
+      shiftsTableBody.innerHTML = '';
+      if (shifts.length === 0) {
+        shiftsTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 1rem; color:#888;">No shifts saved.</td></tr>`;
+        return;
+      }
+      shifts.sort((a,b) => new Date(b.date) - new Date(a.date));
+      shifts.forEach((shift, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="padding: 0.5rem;">${shift.date}</td>
+          <td style="padding: 0.5rem;">${shift.hours_worked}</td>
+          <td style="padding: 0.5rem;">${shift.holiday_type === 'none' ? 'None' : (shift.holiday_type === 'legal' ? 'Legal Holiday' : 'Special Holiday')}</td>
+          <td style="padding: 0.5rem;">
+            <button aria-label="Edit shift on ${shift.date}" data-index="${index}" class="edit-btn">Edit</button>
+            <button aria-label="Delete shift on ${shift.date}" data-index="${index}" class="delete-btn">Delete</button>
+          </td>
+        `;
+        shiftsTableBody.appendChild(tr);
+      });
+      // Attach listeners
+      document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', editShift));
+      document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', deleteShift));
+    }
+
+    // Submit shift
+    btnSubmitShift.addEventListener('click', () => {
+      const date = shiftDateInput.value;
+      const hours = parseFloat(shiftHoursInput.value);
+      const holiday = holidayTypeSelect.value;
+      if (!date) {
+        alert('Please select a date.');
+        return;
+      }
+      if (isNaN(hours) || hours < 0 || hours > 24) {
+        alert('Please enter valid hours worked (0-24).');
+        return;
+      }
+      let shifts = getShifts();
+      const existingIndex = shifts.findIndex(s => s.date === date);
+      if (existingIndex > -1) {
+        shifts[existingIndex] = { date, hours_worked: hours, holiday_type: holiday };
+      } else {
+        shifts.push({ date, hours_worked: hours, holiday_type: holiday });
+      }
+      saveShifts(shifts);
+      alert('Shift saved.');
+      clearShiftForm();
+      loadShifts();
+    });
+
+    // Clear form
+    function clearShiftForm() {
+      shiftDateInput.value = '';
+      shiftHoursInput.value = '';
+      holidayTypeSelect.value = 'none';
+    }
+
+    // Edit shift
+    function editShift(e) {
+      const index = parseInt(e.target.dataset.index);
+      const shifts = getShifts();
+      if (index < 0 || index >= shifts.length) return;
+      const shift = shifts[index];
+      shiftDateInput.value = shift.date;
+      shiftHoursInput.value = shift.hours_worked;
+      holidayTypeSelect.value = shift.holiday_type;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Delete shift
+    function deleteShift(e) {
+      const index = parseInt(e.target.dataset.index);
+      if (!confirm('Delete this shift?')) return;
+      let shifts = getShifts();
+      shifts.splice(index, 1);
+      saveShifts(shifts);
+      loadShifts();
+    }
+
+    // Generate payslip
+    btnGeneratePayslip.addEventListener('click', () => {
+      const settings = getSettings();
+      if (!settings.rate_per_day || !settings.overtime_rate || !settings.cutoff_start_day || !settings.cutoff_end_day) {
+        alert('Please save valid settings first.');
+        return;
+      }
+      const rate = settings.rate_per_day;
+      const overtimeRate = settings.overtime_rate;
+      const cutoffStart = settings.cutoff_start_day;
+      const cutoffEnd = settings.cutoff_end_day;
+      const today = new Date();
+      let year = today.getFullYear();
+      let month = today.getMonth();
+      let start = new Date(year, month, cutoffStart);
+      let end = new Date(year, month, cutoffEnd);
+      if (cutoffStart > cutoffEnd) {
+        start = new Date(year, month - 1, cutoffStart);
+      }
+      const shifts = getShifts().filter(shift => {
+        const shiftDate = new Date(shift.date);
+        return shiftDate >= start && shiftDate <= end;
+      });
+      if (shifts.length === 0) {
+        alert('No shifts found for the current cutoff period.');
+        payslipResult.textContent = '';
+        return;
+      }
+      let totalDays = 0, totalOT = 0, totalPay = 0;
+      for (let shift of shifts) {
+        const hours = shift.hours_worked;
+        const ot = Math.max(0, hours - 9);
+        totalDays++;
+        totalOT += ot;
+        totalPay += rate + ot * overtimeRate;
+      }const payslipText = 
+`Period:
+${start.toDateString()} - ${end.toDateString()}
+
+Days:
+${totalDays}
+
+Overtime:
+${totalOT.toFixed(2)} hrs
+
+Total Pay:
+₱${totalPay.toFixed(2)}`;
+
+
+      payslipResult.textContent = payslipText;
+    });
+
+    // Scroll to top
+    document.querySelector('.fab').addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Init
+    loadSettings();
+    loadShifts();
+    
+
+
+  </script>
+</body>
+</html>
