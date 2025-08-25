@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WorkDays</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary: #1565c0;
+            --primary-dark: #0d47a1;
+            --bg: #f5f9ff;
+            --text: #333;
+        }
+
+        * { box-sizing: border-box; font-family: "Noto Sans", sans-serif; }
+        body { background: var(--bg); margin: 0; padding: 0; }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: #eee;
+            padding: 10px;
+            gap: 10px;
+            border-radius: 20px;
+            margin: 10px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--primary-dark);
+            font-weight: bold;
+            padding: 10px 16px;
+            border-radius: 20px;
+            transition: background 0.3s, color 0.3s;
+            text-align: center;
+            flex: 1 1 auto;
+            min-width: 100px;
+        }
+
+        nav a:hover { background: var(--primary); color: white; }
+        nav a.active { background: var(--primary-dark); color: white; }
+
+        main {
+            max-width: 480px;
+            width: 95%;
+            margin: 20px auto;
+            background: white;
+            padding: 25px 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        h2 { text-align: center; color: var(--primary-dark); margin-bottom: 25px; }
+
+        label { display: block; margin-top: 15px; color: var(--text); font-weight: bold; font-size: 1em; }
+
+        input[type="date"], input[type="number"], input[type="month"], select {
+            width: 100%;
+            padding: 14px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px rgba(21,101,192,0.3);
+            outline: none;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 14px;
+            background: var(--primary);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        section { margin-bottom: 25px; }
+
+        .shift-group {
+            background: #e3f2fd;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .shift-group:hover { background: #bbdefb; }
+
+        #shiftList { padding-right: 5px; }
+
+        .shift-list {
+            margin-left: 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .shift-list.show { max-height: 500px; }
+
+        .shift-item {
+            background: #fafafa;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shift-item span { flex: 1; }
+
+        .shift-item button {
+            margin-left: 5px;
+            padding: 6px 12px;
+            font-size: 0.9em;
+            border-radius: 12px;
+            border: none;
+            background: #607d8b;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .shift-item button:hover { background: #ccc; color: #000; }
+
+        .shift-item button.delete { background: red; color: white; }
+        .shift-item button.delete:hover { background: darkred; }
+
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            color: green;
+            font-weight: bold;
+            font-size: 1em;
+            transition: opacity 0.5s;
+            opacity: 0;
+        }
+
+        @media (max-width: 400px) {
+            header { font-size: 1.3em; padding: 15px; }
+            nav a { padding: 8px 12px; font-size: 0.95em; min-width: 80px; }
+            main { padding: 20px 15px; margin: 15px auto; }
+            input, button, select { padding: 12px; font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+<header>WorkDays</header>
+
+<nav>
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="settings.html">Settings</a>
+    <a href="payslip.html">Payslip</a>
+</nav>
+
+<main>
+    <section>
+        <h2>Input Shifts</h2>
+        <label>Date:</label>
+        <input type="date" id="shiftDate" />
+        <label>Hours Worked:</label>
+        <input type="number" id="hoursWorked" />
+        <label>Holiday Type:</label>
+        <select id="holidayType">
+            <option value="Regular Day">None</option>
+            <option value="Legal Holiday">Legal Holiday</option>
+            <option value="Special Holiday">Special Holiday</option>
+        </select>
+        <button onclick="addShift()">Submit Shift</button>
+        <div id="message" class="message"></div>
+    </section>
+
+    <section>
+        <h2>Saved Shifts</h2>
+        <div id="shiftList"></div>
+    </section>
+
+    <section>
+        <h2>Delete Shifts</h2>
+        <label>Select Month:</label>
+        <input type="month" id="deleteMonth" />
+        <button onclick="deleteByMonth()">Delete Shifts</button>
+        <hr style="margin: 15px 0" />
+        <button style="background: red" onclick="deleteAllShifts()">Delete All Shifts</button>
+    </section>
+</main>
+
+<script>
+let currentUserEmail = sessionStorage.getItem("currentUserEmail");
+
+if (!currentUserEmail) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Not logged in',
+        confirmButtonText: 'OK'
+    }).then(() => { window.location.href = "index.html"; });
+} else {
+    let editOriginalDate = null;
+
+    function getShifts() {
+        return JSON.parse(localStorage.getItem(currentUserEmail + "_shifts")) || [];
+    }
+
+    function saveShifts(shifts) {
+        localStorage.setItem(currentUserEmail + "_shifts", JSON.stringify(shifts));
+    }
+
+    function getMonthKey(dateStr) {
+        const d = new Date(dateStr);
+        return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}`;
+    }
+
+    function renderShifts() {
+        const list = document.getElementById("shiftList");
+        const shifts = getShifts().sort((a, b) => new Date(b.date) - new Date(a.date));
+        list.innerHTML = "";
+
+        if (shifts.length === 0) {
+            list.innerHTML = "<p>No shifts recorded yet.</p>";
+            return;
+        }
+
+        const grouped = {};
+        shifts.forEach(shift => {
+            const key = getMonthKey(shift.date);
+            if (!grouped[key]) grouped[key] = [];
+            grouped[key].push(shift);
+        });
+
+        for (const month in grouped) {
+            const header = document.createElement("div");
+            header.className = "shift-group";
+            header.textContent = month;
+
+            const container = document.createElement("div");
+            container.className = "shift-list";
+
+            grouped[month].forEach(shift => {
+                const div = document.createElement("div");
+                div.className = "shift-item";
+                div.innerHTML = `<span><strong>${shift.date}</strong> — ${shift.hours} hrs (${shift.type})</span>
+                <div>
+                    <button onclick="editShift('${shift.date}')">Edit</button>
+                    <button class="delete" onclick="deleteShift('${shift.date}')">Delete</button>
+                </div>`;
+                container.appendChild(div);
+            });
+
+            header.addEventListener("click", () => {
+                document.querySelectorAll(".shift-list.show").forEach(el => {
+                    if (el !== container) el.classList.remove("show");
+                });
+                container.classList.toggle("show");
+            });
+
+            list.appendChild(header);
+            list.appendChild(container);
+        }
+
+        if (Object.keys(grouped).length > 3) {
+            list.style.maxHeight = "600px";
+            list.style.overflowY = "auto";
+        } else {
+            list.style.maxHeight = "none";
+            list.style.overflowY = "visible";
+        }
+    }
+
+    function addShift() {
+        const date = document.getElementById("shiftDate").value;
+        const hours = parseFloat(document.getElementById("hoursWorked").value);
+        const holiday = document.getElementById("holidayType").value;
+
+        if (!date || isNaN(hours) || hours < 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Input',
+                text: "Please enter valid shift details.",
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        let shifts = getShifts();
+        const existingIndex = shifts.findIndex(s => s.date === date);
+
+        const proceedAdd = () => {
+            if (editOriginalDate) {
+                shifts = shifts.filter(s => s.date !== editOriginalDate);
+                shifts.push({ date, hours, type: holiday });
+                editOriginalDate = null;
+            } else if (existingIndex > -1) {
+                shifts[existingIndex] = { date, hours, type: holiday };
+            } else {
+                shifts.push({ date, hours, type: holiday });
+            }
+
+            let groupedKeys = [...new Set(shifts.map(s => getMonthKey(s.date)))];
+            if (groupedKeys.length > 5) {
+                const oldestMonth = groupedKeys.sort()[0];
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Too Many Months',
+                    text: `You already have 5 month groups. Delete the oldest month (${oldestMonth}) to add new shift?`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'Cancel'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        shifts = shifts.filter(s => getMonthKey(s.date) !== oldestMonth);
+                        saveShifts(shifts);
+                        renderShifts();
+                    }
+                });
+                return;
+            }
+
+            saveShifts(shifts);
+            renderShifts();
+            document.getElementById("shiftDate").value = "";
+            document.getElementById("hoursWorked").value = "";
+            document.getElementById("holidayType").value = "Regular Day";
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Shift Saved',
+                text: 'Shift saved successfully!',
+                confirmButtonText: 'OK'
+            });
+        };
+
+        if (existingIndex > -1 && !editOriginalDate) {
+            Swal.fire({
+                icon: 'question',
+                title: 'Overwrite Shift?',
+                text: "You already entered a shift for this date. Overwrite it?",
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then(result => { if (result.isConfirmed) proceedAdd(); });
+        } else {
+            proceedAdd();
+        }
+    }
+
+    function editShift(date) {
+        const shifts = getShifts();
+        const shift = shifts.find(s => s.date === date);
+        if (!shift) return;
+
+        document.getElementById("shiftDate").value = shift.date;
+        document.getElementById("hoursWorked").value = shift.hours;
+        document.getElementById("holidayType").value = shift.type;
+        editOriginalDate = shift.date;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function deleteShift(date) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Delete Shift?',
+            text: `Are you sure you want to delete the shift on ${date}?`,
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+        }).then(result => {
+            if (result.isConfirmed) {
+                let shifts = getShifts();
+                shifts = shifts.filter(s => s.date !== date);
+                saveShifts(shifts);
+                renderShifts();
+            }
+        });
+    }
+
+    function deleteByMonth() {
+        const monthInput = document.getElementById("deleteMonth").value;
+        if (!monthInput) {
+            Swal.fire({
+                icon: 'error',
+                title: 'No Month Selected',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Delete Shifts?',
+            text: `Are you sure you want to delete all shifts for ${monthInput}?`,
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+        }).then(result => {
+            if (!result.isConfirmed) return;
+
+            const [year, month] = monthInput.split("-").map(Number);
+            let shifts = getShifts();
+            shifts = shifts.filter(s => {
+                const d = new Date(s.date);
+                return !(d.getFullYear() === year && d.getMonth() + 1 === month);
+            });
+
+            saveShifts(shifts);
+            renderShifts();
+            document.getElementById("deleteMonth").value = "";
+        });
+    }
+
+    function deleteAllShifts() {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Delete All Shifts?',
+            text: "Are you sure you want to delete ALL shifts?",
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+        }).then(result => {
+            if (result.isConfirmed) {
+                saveShifts([]);
+                renderShifts();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'All Shifts Deleted',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    }
+
+    renderShifts();
+}
+</script>
+</body>
+</html>
