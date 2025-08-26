@@ -40,6 +40,25 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
+    /* Log Out button below header, top-right */
+    #logoutBtn {
+      display: block;
+      text-align: right;
+      margin: 5px 20px 10px 0;
+      background: transparent;
+      border: none;
+      color: var(--primary-dark);
+      font-weight: bold;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: color 0.3s, transform 0.2s;
+    }
+
+    #logoutBtn:hover {
+      color: red;
+      transform: scale(1.05);
+    }
+
     nav {
       display: flex;
       flex-wrap: wrap;
@@ -63,15 +82,8 @@
       min-width: 100px;
     }
 
-    nav a:hover {
-      background: var(--primary);
-      color: white;
-    }
-
-    nav a.active {
-      background: var(--primary-dark);
-      color: white;
-    }
+    nav a:hover { background: var(--primary); color: white; }
+    nav a.active { background: var(--primary-dark); color: white; }
 
     main {
       max-width: 480px;
@@ -83,22 +95,11 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
 
-    h2 {
-      text-align: center;
-      color: var(--primary-dark);
-      margin-bottom: 25px;
-    }
+    h2 { text-align: center; color: var(--primary-dark); margin-bottom: 25px; }
 
-    label {
-      display: block;
-      margin-top: 15px;
-      color: var(--text);
-      font-weight: bold;
-      font-size: 1em;
-    }
+    label { display: block; margin-top: 15px; color: var(--text); font-weight: bold; font-size: 1em; }
 
-    input[type="date"],
-    input[type="number"] {
+    input[type="date"], input[type="number"] {
       width: 100%;
       padding: 14px;
       margin-top: 6px;
@@ -134,34 +135,20 @@
     }
 
     @media (max-width: 400px) {
-      header {
-        font-size: 1.3em;
-        padding: 15px;
-      }
-
-      nav a {
-        padding: 8px 12px;
-        font-size: 0.95em;
-        min-width: 80px;
-      }
-
-      main {
-        padding: 20px 15px;
-        margin: 15px auto;
-      }
-
-      input[type="date"],
-      input[type="number"],
-      button {
-        padding: 12px;
-        font-size: 1em;
-      }
+      header { font-size: 1.3em; padding: 15px; }
+      nav a { padding: 8px 12px; font-size: 0.95em; min-width: 80px; }
+      main { padding: 20px 15px; margin: 15px auto; }
+      input[type="date"], input[type="number"], button { padding: 12px; font-size: 1em; }
+      #logoutBtn { font-size: 0.8em; margin-right: 10px; }
     }
   </style>
 </head>
 <body>
 
   <header>WorkDays</header>
+
+  <!-- Transparent Log Out button -->
+  <button id="logoutBtn">Log Out</button>
 
   <nav>
     <a href="dashboard.html">Dashboard</a>
@@ -219,7 +206,7 @@
     if (firstCutoff) firstCutoffInput.value = firstCutoff;
     if (secondCutoff) secondCutoffInput.value = secondCutoff;
 
-    // Enable/disable save button based on input
+    // Enable/disable save button
     const checkFields = () => {
       saveButton.disabled = !(
         dailyRateInput.value.trim() &&
@@ -228,7 +215,6 @@
         secondCutoffInput.value
       );
     };
-
     checkFields();
     [dailyRateInput, overTimeRateInput, firstCutoffInput, secondCutoffInput].forEach(input => {
       input.addEventListener("input", checkFields);
@@ -237,7 +223,6 @@
     // Save settings
     document.getElementById("settingsForm").addEventListener("submit", (e) => {
       e.preventDefault();
-
       localStorage.setItem("dailyRate", dailyRateInput.value);
       localStorage.setItem("overTimeRate", overTimeRateInput.value);
       localStorage.setItem("firstCutoff", firstCutoffInput.value);
@@ -248,6 +233,27 @@
         title: "Settings Saved",
         text: "Settings saved successfully.",
         confirmButtonText: "OK"
+      });
+    });
+
+    // Log Out button with SweetAlert2 confirmation
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Log Out?',
+        text: 'Are you sure you want to log out?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel'
+      }).then(result => {
+        if (result.isConfirmed) {
+          sessionStorage.removeItem("currentUserEmail");
+          Swal.fire({
+            icon: 'success',
+            title: 'Logged Out',
+            confirmButtonText: 'OK'
+          }).then(() => { window.location.href = "index.html"; });
+        }
       });
     });
   });

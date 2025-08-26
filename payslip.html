@@ -13,10 +13,27 @@
 * { box-sizing: border-box; font-family: Noto Sans, sans-serif; }
 body { background: var(--bg); margin:0; padding:0; }
 header { background: var(--primary); color:white; padding:20px; text-align:center; font-size:1.5em; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+
+/* Transparent Log Out button below header, top-right */
+#logoutBtn {
+    display: block;
+    text-align: right;
+    margin: 5px 20px 10px 0;
+    background: transparent;
+    border: none;
+    color: var(--primary-dark);
+    font-weight: bold;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.2s;
+}
+#logoutBtn:hover { color: red; transform: scale(1.05); }
+
 nav { display:flex; flex-wrap:wrap; justify-content:center; background:#eee; padding:10px; gap:10px; border-radius:20px; margin:10px; }
 nav a { text-decoration:none; color:var(--primary-dark); font-weight:bold; padding:10px 16px; border-radius:20px; transition: background 0.3s,color 0.3s; text-align:center; flex:1 1 auto; min-width:100px; }
 nav a:hover { background: var(--primary); color:white; }
 nav a.active { background: var(--primary-dark); color:white; }
+
 main { max-width:480px; width:95%; margin:20px auto; background:white; padding:25px 20px; border-radius:20px; box-shadow:0 8px 20px rgba(0,0,0,0.1); }
 h2 { text-align:center; color:var(--primary-dark); margin-bottom:25px; }
 button { margin-top:25px; padding:14px; background:var(--primary); border:none; border-radius:20px; color:white; font-size:1.1em; font-weight:bold; cursor:pointer; transition:background 0.3s, transform 0.2s; width:100%; }
@@ -24,12 +41,22 @@ button:hover { background: var(--primary-dark); transform: translateY(-2px); }
 .payslip { margin-top:20px; border-top:2px solid var(--primary); padding-top:15px; }
 .payslip h3 { text-align:center; color:var(--primary-dark); margin-bottom:10px; }
 .payslip pre { background:#f1f1f1; padding:15px; border-radius:15px; overflow-x:auto; font-family:'Courier New', monospace; white-space:pre-wrap; }
-@media (max-width:400px) { header { font-size:1.3em; padding:15px; } nav a { padding:8px 12px; font-size:0.95em; min-width:80px; } main { padding:20px 15px; margin:15px auto; } button { padding:12px; font-size:1em; } }
+
+@media (max-width:400px) {
+    header { font-size:1.3em; padding:15px; }
+    nav a { padding:8px 12px; font-size:0.95em; min-width:80px; }
+    main { padding:20px 15px; margin:15px auto; }
+    button { padding:12px; font-size:1em; }
+    #logoutBtn { font-size:0.8em; margin-right:10px; }
+}
 </style>
 </head>
 <body>
 
 <header>WorkDays</header>
+
+<!-- Transparent Log Out button -->
+<button id="logoutBtn">Log Out</button>
 
 <nav>
     <a href="dashboard.html">Dashboard</a>
@@ -59,6 +86,27 @@ if (!currentUserEmail) {
         window.location.href = "index.html";
     });
 }
+
+// Log Out button with SweetAlert2 confirmation
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Log Out?',
+        text: 'Are you sure you want to log out?',
+        showCancelButton: true,
+        confirmButtonText: 'Yest',
+        cancelButtonText: 'Cancel'
+    }).then(result => {
+        if (result.isConfirmed) {
+            sessionStorage.removeItem("currentUserEmail");
+            Swal.fire({
+                icon: 'success',
+                title: 'Logged Out',
+                confirmButtonText: 'OK'
+            }).then(() => { window.location.href = "index.html"; });
+        }
+    });
+});
 
 document.addEventListener("DOMContentLoaded", () => {
     const generateBtn = document.getElementById("generatePayslip");
@@ -102,11 +150,15 @@ document.addEventListener("DOMContentLoaded", () => {
             totalWorkedHours += hours;
 
             if (shift.type === "Legal Holiday") {
-                legalHolidayDays += 1;
-                legalHolidayOT += ot;
+                if (hours > 0) {
+                    legalHolidayDays += 1;
+                    legalHolidayOT += ot;
+                }
             } else if (shift.type === "Special Holiday") {
-                specialHolidayDays += 1;
-                specialHolidayOT += ot;
+                if (hours > 0) {
+                    specialHolidayDays += 1;
+                    specialHolidayOT += ot;
+                }
             } else {
                 if (hours > 0) {
                     regularDays += 1;
@@ -146,7 +198,6 @@ ___________________
 Gross Pay: ${formatValue(grossPay)}
 `;
 
-        // Scroll to payslip section smoothly
         payslipOutput.scrollIntoView({ behavior: "smooth" });
     });
 });

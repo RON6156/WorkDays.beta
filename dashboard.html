@@ -29,6 +29,25 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
+        /* Log Out button below header, transparent */
+        #logoutBtn {
+            display: block;
+            text-align: right;
+            margin: 5px 20px 10px 0;
+            background: transparent;
+            border: none;
+            color: var(--primary-dark);
+            font-weight: bold;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.2s;
+        }
+
+        #logoutBtn:hover {
+            color: red;
+            transform: scale(1.05);
+        }
+
         nav {
             display: flex;
             flex-wrap: wrap;
@@ -109,7 +128,7 @@
         .shift-group {
             background: #e3f2fd;
             padding: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             cursor: pointer;
             border-radius: 12px;
             font-weight: bold;
@@ -118,16 +137,24 @@
 
         .shift-group:hover { background: #bbdefb; }
 
-        #shiftList { padding-right: 5px; }
+        /* Scrollable saved shifts list */
+        #shiftList {
+            max-height: 400px;  /* adjust as needed */
+            overflow-y: auto;
+            padding-right: 5px;
+        }
 
         .shift-list {
             margin-left: 15px;
             max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease;
+            overflow-y: hidden;
+            transition: max-height 0.3s ease;
         }
 
-        .shift-list.show { max-height: 500px; }
+        .shift-list.show {
+            max-height: 250px; /* expanded height */
+            overflow-y: auto;
+        }
 
         .shift-item {
             background: #fafafa;
@@ -168,16 +195,84 @@
             opacity: 0;
         }
 
+        /* Slim custom scrollbar (blue) for the main Saved Shifts area */
+        #shiftList::-webkit-scrollbar, .shift-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        #shiftList::-webkit-scrollbar-track, .shift-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        #shiftList::-webkit-scrollbar-thumb, .shift-list::-webkit-scrollbar-thumb {
+            background: #90caf9;
+            border-radius: 10px;
+        }
+        #shiftList::-webkit-scrollbar-thumb:hover, .shift-list::-webkit-scrollbar-thumb:hover {
+            background: #1565c0;
+        }
+
+        /* Firefox */
+        #shiftList, .shift-list {
+            scrollbar-width: thin;
+            scrollbar-color: #90caf9 #f1f1f1;
+        }
+
+        /* =========================
+           ADDITIONS (minimal)
+           ========================= */
+
+        /* Arrow indicator for month headers */
+        .shift-group {
+            position: relative;           /* add positioning for the arrow */
+            padding-left: 28px;           /* small left space so arrow doesn't overlap text */
+        }
+        .shift-group::before {
+            content: "▶";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9em;
+            color: var(--primary-dark);
+            transition: transform 0.2s ease;
+        }
+        .shift-group.open::before {
+            content: "▼";
+        }
+
+        /* Override: Gray scrollbar ONLY for the items within a month */
+        .shift-list.show::-webkit-scrollbar {
+            width: 6px;
+        }
+        .shift-list.show::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .shift-list.show::-webkit-scrollbar-thumb {
+            background: gray;             /* gray thumb for inner list */
+            border-radius: 10px;
+        }
+        .shift-list.show::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .shift-list.show {
+            scrollbar-width: thin;
+            scrollbar-color: gray #f1f1f1; /* Firefox override ONLY for inner list */
+        }
+
         @media (max-width: 400px) {
             header { font-size: 1.3em; padding: 15px; }
             nav a { padding: 8px 12px; font-size: 0.95em; min-width: 80px; }
             main { padding: 20px 15px; margin: 15px auto; }
             input, button, select { padding: 12px; font-size: 1em; }
+            #logoutBtn { font-size: 0.8em; margin-right: 10px; }
         }
     </style>
 </head>
 <body>
 <header>WorkDays</header>
+<!-- Transparent small log out button below header -->
+<button id="logoutBtn">Log Out</button>
 
 <nav>
     <a href="dashboard.html" class="active">Dashboard</a>
@@ -279,22 +374,25 @@ if (!currentUserEmail) {
             });
 
             header.addEventListener("click", () => {
+                const isOpen = container.classList.contains("show");
+
+                // Close all open groups and remove their 'open' arrow state
                 document.querySelectorAll(".shift-list.show").forEach(el => {
-                    if (el !== container) el.classList.remove("show");
+                    el.classList.remove("show");
+                    if (el.previousElementSibling && el.previousElementSibling.classList) {
+                        el.previousElementSibling.classList.remove("open");
+                    }
                 });
-                container.classList.toggle("show");
+
+                // Toggle this one
+                if (!isOpen) {
+                    container.classList.add("show");
+                    header.classList.add("open"); // arrow ▼
+                } // if it was open, clicking will close it and leave none open
             });
 
             list.appendChild(header);
             list.appendChild(container);
-        }
-
-        if (Object.keys(grouped).length > 3) {
-            list.style.maxHeight = "600px";
-            list.style.overflowY = "auto";
-        } else {
-            list.style.maxHeight = "none";
-            list.style.overflowY = "visible";
         }
     }
 
@@ -325,26 +423,6 @@ if (!currentUserEmail) {
                 shifts[existingIndex] = { date, hours, type: holiday };
             } else {
                 shifts.push({ date, hours, type: holiday });
-            }
-
-            let groupedKeys = [...new Set(shifts.map(s => getMonthKey(s.date)))];
-            if (groupedKeys.length > 5) {
-                const oldestMonth = groupedKeys.sort()[0];
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Too Many Months',
-                    text: `You already have 5 month groups. Delete the oldest month (${oldestMonth}) to add new shift?`,
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes',
-                    cancelButtonText: 'Cancel'
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        shifts = shifts.filter(s => getMonthKey(s.date) !== oldestMonth);
-                        saveShifts(shifts);
-                        renderShifts();
-                    }
-                });
-                return;
             }
 
             saveShifts(shifts);
@@ -459,6 +537,27 @@ if (!currentUserEmail) {
             }
         });
     }
+
+    // Log Out button with confirmation
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Log Out?',
+            text: 'Are you sure you want to log out?',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+        }).then(result => {
+            if (result.isConfirmed) {
+                sessionStorage.removeItem("currentUserEmail");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Logged Out',
+                    confirmButtonText: 'OK'
+                }).then(() => { window.location.href = "index.html"; });
+            }
+        });
+    });
 
     renderShifts();
 }
