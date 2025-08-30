@@ -1,4 +1,6 @@
 # WorkDays App
+[![Beta Release](https://img.shields.io/github/v/release/OWNER/REPO?include_prereleases&logo=github&label=beta&color=F97316)](https://github.com/RON6156/WorkDays.beta/releases)
+
 
 A simple client-side web app to **track work shifts and generate payslips** using **HTML, CSS, and JavaScript**.
 
