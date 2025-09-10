@@ -1,57 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WorkDays - Payslip</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2684383807209830"
-     crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<style>
-:root { --primary: #1565c0; --primary-dark: #0d47a1; --bg: #f5f9ff; --text: #333; }
-* { box-sizing: border-box; font-family: Noto Sans, sans-serif; }
-body { background: var(--bg); margin:0; padding:0; }
-header { background: var(--primary); color:white; padding:20px; text-align:center; font-size:1.5em; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
-nav { display:flex; flex-wrap:wrap; justify-content:center; background:#eee; padding:10px; gap:10px; border-radius:20px; margin:10px; }
-nav a { text-decoration:none; color:var(--primary-dark); font-weight:bold; padding:10px 16px; border-radius:20px; transition: background 0.3s,color 0.3s; text-align:center; flex:1 1 auto; min-width:100px; }
-nav a:hover { background: var(--primary); color:white; }
-nav a.active { background: var(--primary-dark); color:white; }
-main { max-width:480px; width:95%; margin:20px auto; background:white; padding:25px 20px; border-radius:20px; box-shadow:0 8px 20px rgba(0,0,0,0.1); }
-h2 { text-align:center; color:var(--primary-dark); margin-bottom:25px; }
-button { margin-top:25px; padding:14px; background:var(--primary); border:none; border-radius:20px; color:white; font-size:1.1em; font-weight:bold; cursor:pointer; transition:background 0.3s, transform 0.2s; width:100%; }
-button:hover { background: var(--primary-dark); transform: translateY(-2px); }
-.payslip { margin-top:20px; border-top:2px solid var(--primary); padding-top:15px; }
-.payslip h3 { text-align:center; color:var(--primary-dark); margin-bottom:10px; }
-.payslip pre { background:#f1f1f1; padding:15px; border-radius:15px; overflow-x:auto; font-family:'Courier New', monospace; white-space:pre-wrap; }
-@media (max-width:400px) { header { font-size:1.3em; padding:15px; } nav a { padding:8px 12px; font-size:0.95em; min-width:80px; } main { padding:20px 15px; margin:15px auto; } button { padding:12px; font-size:1em; } }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkDays - Payslip</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+                                                                                                                          rel="stylesheet">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2684383807209830"
+                                                                                                                          crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --primary: #1565c0;
+      --primary-dark: #0d47a1;
+      --bg: #f5f9ff;
+      --text: #333;
+    }
+    
+    * {
+      box-sizing: border-box;
+      font-family: Noto Sans, sans-serif;
+    }
+    
+    body {
+      background: var(--bg);
+      margin: 0;
+      padding: 0;
+    }
+    
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: #eee;
+      padding: 10px;
+      gap: 10px;
+      border-radius: 20px;
+      margin: 10px;
+    }
+    
+    nav a {
+      text-decoration: none;
+      color: var(--primary-dark);
+      font-weight: bold;
+      padding: 10px 16px;
+      border-radius: 20px;
+      transition: background 0.3s, color 0.3s;
+      text-align: center;
+      flex: 1 1 auto;
+      min-width: 100px;
+    }
+    
+    nav a:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    nav a.active {
+      background: var(--primary-dark);
+      color: white;
+    }
+    
+    main {
+      max-width: 480px;
+      width: 95%;
+      margin: 20px auto;
+      background: white;
+      padding: 25px 20px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    h2 {
+      text-align: center;
+      color: var(--primary-dark);
+      margin-bottom: 25px;
+    }
+    
+    button {
+      margin-top: 25px;
+      padding: 14px;
+      background: var(--primary);
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      width: 100%;
+    }
+    
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .payslip {
+      margin-top: 20px;
+      border-top: 2px solid var(--primary);
+      padding-top: 15px;
+    }
+    
+    .payslip h3 {
+      text-align: center;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+    }
+    
+    .payslip pre {
+      background: #f1f1f1;
+      padding: 15px;
+      border-radius: 15px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+    }
+    
+    @media (max-width:400px) {
+      header {
+        font-size: 1.3em;
+        padding: 15px;
+      }
+      
+      nav a {
+        padding: 8px 12px;
+        font-size: 0.95em;
+        min-width: 80px;
+      }
+      
+      main {
+        padding: 20px 15px;
+        margin: 15px auto;
+      }
+      
+      button {
+        padding: 12px;
+        font-size: 1em;
+      }
+    }
+  </style>
 </head>
+
 <body>
-
-<header>WorkDays</header>
-
-<nav>
+  
+  <header>WorkDays</header>
+  
+  <nav>
     <a href="dashboard.html">Dashboard</a>
     <a href="settings.html">Settings</a>
     <a href="payslip.html" class="active">Payslip</a>
-</nav>
-
-<main>
-<h2>Payslip</h2>
-
-<button id="generatePayslip">Generate Payslip</button>
-
-<div class="payslip" id="payslipOutput">
-    <h3>Employee Payslip</h3>
-    <pre id="payslipContent">Click "Generate Payslip" to view your payslip for the current cut-off.</pre>
-</div>
-</main>
-
-<script>
-let currentUserEmail = sessionStorage.getItem("currentUserEmail");
+  </nav>
+  
+  <main>
+    <h2>Payslip</h2>
+    
+    <button id="generatePayslip">Generate Payslip</button>
+    
+    <div class="payslip" id="payslipOutput">
+      <h3>Employee Payslip</h3>
+      <pre id="payslipContent">Click "Generate Payslip" to view your payslip for the current cut-off.</pre>
+    </div>
+  </main>
+  
+  <script>
+    let currentUserEmail = sessionStorage.getItem("currentUserEmail");
 if (!currentUserEmail) {
     Swal.fire({
         icon: 'error',
@@ -97,34 +224,73 @@ document.addEventListener("DOMContentLoaded", () => {
         let legalHolidayDays = 0, legalHolidayOT = 0;
         let specialHolidayDays = 0, specialHolidayOT = 0;
         let totalWorkedHours = 0;
-
+        
         shiftsInPeriod.forEach(shift => {
-            const hours = parseFloat(shift.hours || 0);
-            const ot = Math.max(0, hours - 8);
-            totalWorkedHours += hours;
+    const hours = parseFloat(shift.hours || 0);
+    const ot = Math.max(0, hours - 8);
+    totalWorkedHours += hours;
 
-            if (shift.type === "Legal Holiday") {
-                legalHolidayDays += 1;
-                legalHolidayOT += ot;
-            } else if (shift.type === "Special Holiday") {
-                specialHolidayDays += 1;
-                specialHolidayOT += ot;
-            } else {
-                if (hours > 0) {
-                    regularDays += 1;
-                    regularOTHours += ot;
-                }
-            }
-        });
+    if (shift.type === "Legal Holiday") {
+        if (hours > 0) {
+            
+            legalHolidayDays += 1;
+            legalHolidayOT += ot;
+        } else {
+            
+            legalHolidayDays += 1; 
+            shift.legalHolidayZeroHours = true;
+        }
+    } else if (shift.type === "Special Holiday") {
+        if (hours > 0) {
+            
+            specialHolidayDays += 1;
+            specialHolidayOT += ot;
+        } else {
+            
+            specialHolidayDays += 1;
+            shift.specialHolidayZeroHours = true;
+        }
+    } else {
+        if (hours > 0) {
+            regularDays += 1;
+            regularOTHours += ot;
+        }
+    }
+});
 
-        const regularPay = regularDays * dailyRate;
-        const regularOTPay = regularOTHours * overtimeRate;
-        const LHPay = legalHolidayDays * dailyRate * 2;
-        const LHOTPay = legalHolidayOT * overtimeRate * 2;
-        const SHPay = specialHolidayDays * dailyRate * 1.3;
-        const SHOTPay = specialHolidayOT * overtimeRate * 1.3;
 
-        const grossPay = regularPay + regularOTPay + LHPay + LHOTPay + SHPay + SHOTPay;
+const regularPay = regularDays * dailyRate;
+const regularOTPay = regularOTHours * overtimeRate;
+
+
+let LHPay = 0, LHOTPay = 0;
+shiftsInPeriod.forEach(shift => {
+    if (shift.type === "Legal Holiday") {
+        if (shift.hours > 0) {
+            LHPay += dailyRate * 2; 
+            LHOTPay += Math.max(0, shift.hours - 8) * overtimeRate * 2;
+        } else {
+            LHPay += dailyRate * 1; 
+        }
+    }
+});
+
+
+let SHPay = 0, SHOTPay = 0;
+shiftsInPeriod.forEach(shift => {
+    if (shift.type === "Special Holiday") {
+        if (shift.hours > 0) {
+            SHPay += dailyRate * 1.3; 
+            SHOTPay += Math.max(0, shift.hours - 8) * overtimeRate * 1.3;
+        } else {
+            SHPay += dailyRate * 0.3;
+        }
+    }
+});
+
+const grossPay = regularPay + regularOTPay + LHPay + LHOTPay + SHPay + SHOTPay;
+
+
         const formatValue = val => "₱" + val.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         payslipContent.textContent = `
@@ -152,7 +318,8 @@ Gross Pay: ${formatValue(grossPay)}
         payslipOutput.scrollIntoView({ behavior: "smooth" });
     });
 });
-</script>
-
+  </script>
+  
 </body>
+
 </html>
